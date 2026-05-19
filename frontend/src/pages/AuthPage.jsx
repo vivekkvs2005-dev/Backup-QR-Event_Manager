@@ -12,6 +12,8 @@ import {
 
 import API from "../services/api";
 
+import MessageAlert from "../components/MessageAlert";
+
 function AuthPage({ user, setUser }) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
@@ -96,8 +98,14 @@ function AuthPage({ user, setUser }) {
             <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} required />
           </div>
 
-          {error && <p className="msg error">{error}</p>}
-          {message && <p className="msg success">{message}</p>}
+          <MessageAlert
+            type="error"
+            message={error}
+            />
+          <MessageAlert
+            type="success"
+            message={message}
+            />
 
           <button className="btn btn-primary btn-full" type="submit" disabled={loading}>
             {loading ? "Please wait..." : isLogin ? "Login" : "Create Account"}
