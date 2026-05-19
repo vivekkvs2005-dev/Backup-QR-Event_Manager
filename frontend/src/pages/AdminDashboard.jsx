@@ -9,13 +9,13 @@ import { useState, useEffect } from "react";
 
 import Navbar from "../components/Navbar";
 
-import StatusBadge from "../components/StatusBadge";
-
 import EventCard from "../components/EventCard";
 
 import API from "../services/api";
 
 import FeedbackCard from "../components/FeedbackCard";
+
+import AttendeeTable from "../components/AttendeeTable";
 
 function AdminDashboard({ user, setUser }) {
   const [events, setEvents] = useState([]);
@@ -156,59 +156,12 @@ function AdminDashboard({ user, setUser }) {
             {attendees.length === 0 ? (
               <p>No registrations yet for this event.</p>
             ) : (
-              <div className="table-wrapper">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Phone</th>
-                      <th>UTR Number</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {attendees.map((a, i) => (
-                      <tr key={a.id}>
-                        <td>{i + 1}</td>
-                        <td>{a.name}</td>
-                        <td>{a.email}</td>
-                        <td>{a.phone || "—"}</td>
-                        <td><code>{a.upi_utr}</code></td>
-                        <td><StatusBadge status={a.payment_status} /></td>
-                        <td>
-                          {a.payment_status === "under_review" && (
-                            <div className="action-btns">
-                              <button
-                                className="btn btn-success btn-sm"
-                                disabled={loadingAction === a.id + "-approve"}
-                                onClick={() => approveAttendee(a.id)}
-                              >
-                                {loadingAction === a.id + "-approve" ? "..." : "✅ Approve"}
-                              </button>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                disabled={loadingAction === a.id + "-reject"}
-                                onClick={() => rejectAttendee(a.id)}
-                              >
-                                {loadingAction === a.id + "-reject" ? "..." : "❌ Reject"}
-                              </button>
-                            </div>
-                          )}
-                          {a.payment_status === "paid" && (
-                            <span className="text-muted">Ticket sent ✓</span>
-                          )}
-                          {a.payment_status === "failed" && (
-                            <span className="text-muted">Rejected</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <AttendeeTable
+            attendees={attendees}
+            loadingAction={loadingAction}
+            approveAttendee={approveAttendee}
+            rejectAttendee={rejectAttendee}
+            />
             )}
           </div>
         )}
