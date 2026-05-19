@@ -4,6 +4,8 @@ const QRCode = require("qrcode");
 
 const transporter = require("../utils/mailer");
 
+const generateTicketToken =  require("../utils/tokenGenerator");
+
 async function registerAttendee(req, res) {
   const {
     event_id,
@@ -112,14 +114,7 @@ async function approveAttendee(req, res) {
 
     const attendee = rows[0];
 
-    const ticketToken =
-      "TKT-" +
-      Date.now() +
-      "-" +
-      Math.random()
-        .toString(36)
-        .substring(2, 10)
-        .toUpperCase();
+    const ticketToken =  generateTicketToken();
 
     const verifyUrl =
       `${process.env.FRONTEND_URL}/verify/${ticketToken}`;
