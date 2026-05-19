@@ -745,6 +745,40 @@ code {
   border: 2px solid var(--border);
 }
 
+/* ─── QR UPLOAD SECTION ───────────────────────── */
+
+.upload-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 22px 0 18px;
+  position: relative;
+}
+
+.upload-divider::before,
+.upload-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.upload-divider span {
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--surface);
+}
+
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
 /* ─── FEEDBACK VIEWER ───────────────────────── */
 
 .feedback-list {
