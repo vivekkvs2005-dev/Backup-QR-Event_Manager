@@ -15,6 +15,8 @@ import EventCard from "../components/EventCard";
 
 import API from "../services/api";
 
+import FeedbackCard from "../components/FeedbackCard";
+
 function AdminDashboard({ user, setUser }) {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -236,18 +238,10 @@ function AdminDashboard({ user, setUser }) {
             ) : (
               <div className="feedback-list">
                 {feedbackData.map((item, index) => (
-                  <div key={index} className="feedback-item">
-
-                    <div className="feedback-stars">
-                      {"★".repeat(item.rating)}
-                      {"☆".repeat(5 - item.rating)}
-                    </div>
-
-                    <p className="feedback-comment">
-                      {item.comments || "No comment provided."}
-                    </p>
-
-                  </div>
+                <FeedbackCard
+                    key={index}
+                    item={item}
+                />
                 ))}
               </div>
             )}
