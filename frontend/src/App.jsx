@@ -1,6 +1,7 @@
 // frontend/src/App.jsx
 // QR-Based Event Management System - Frontend
 // Install: npm install react-router-dom
+import API from "./services/api";
 
 import { useState, useEffect } from "react";
 import {
@@ -15,7 +16,7 @@ import {
 
 import { BrowserMultiFormatReader } from "@zxing/browser";
 
-const API = "http://localhost:5001/api";
+
 
 // ════════════════════════════════════════════════════════════════
 //  GLOBAL APP with Router + State
