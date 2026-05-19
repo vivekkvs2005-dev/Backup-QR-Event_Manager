@@ -12,6 +12,7 @@ const cors = require("cors");
 const pool = require("./db");
 
 const authRoutes = require("./routes/authRoutes");
+const eventRoutes = require("./routes/eventRoutes");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/events", eventRoutes);
 
 // ─── NODEMAILER TRANSPORTER ──────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
@@ -96,29 +98,6 @@ async function initializeDatabase() {
     conn.release();
   }
 }
-
-// ════════════════════════════════════════════════════════════════
-//  EVENT ROUTES
-// ════════════════════════════════════════════════════════════════
-
-// POST /api/events — Create a new event
-app.post("/api/events", async (req, res) => {
-  const { organizer_id, title, description, event_date, venue, price, organizer_upi_id, organizer_email } = req.body;
-
-  // FIX: Replace "T" from HTML datetime-local input so MySQL accepts it
-  const mysqlDate = event_date ? event_date.replace("T", " ") : null;
-
-  try {
-    const [result] = await pool.query(
-      `INSERT INTO events (organizer_id, title, description, event_date, venue, price, organizer_upi_id, organizer_email)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [organizer_id, title, description, mysqlDate, venue, price, organizer_upi_id, organizer_email]
-    );
-    res.json({ message: "Event created!", id: result.insertId });
-  } catch (err) {
-    res.status(500).json({ error: "Server error: " + err.message });
-  }
-});
 
 // GET /api/events/:id — Get single event details (public, for registration page)
 app.get("/api/events/:id", async (req, res) => {
