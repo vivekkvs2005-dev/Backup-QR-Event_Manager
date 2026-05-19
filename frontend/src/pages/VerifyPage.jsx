@@ -11,6 +11,8 @@ import API from "../services/api";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 
+import VerifyStatusChip from "../components/VerifyStatusChip";
+
 function VerifyPage() {
   const { token } = useParams();
   const [attendee, setAttendee] = useState(null);
@@ -106,15 +108,22 @@ function VerifyPage() {
           <>
             {/* Status Indicators */}
             <div className="status-row">
-              <div className={`status-chip ${attendee.checked_in ? "done" : ""}`}>
-                {attendee.checked_in ? "✅" : "⬜"} Entry
-              </div>
-              <div className={`status-chip ${attendee.lunch_served ? "done" : ""}`}>
-                {attendee.lunch_served ? "✅" : "⬜"} Lunch
-              </div>
-              <div className={`status-chip ${attendee.kit_distributed ? "done" : ""}`}>
-                {attendee.kit_distributed ? "✅" : "⬜"} Kit
-              </div>
+
+            <VerifyStatusChip
+                label="Entry"
+                active={attendee.checked_in}
+            />
+
+            <VerifyStatusChip
+                label="Lunch"
+                active={attendee.lunch_served}
+            />
+
+            <VerifyStatusChip
+                label="Kit"
+                active={attendee.kit_distributed}
+            />
+
             </div>
 
             {actionMsg && <p className="msg success">{actionMsg}</p>}
