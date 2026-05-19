@@ -14,6 +14,7 @@ const authRoutes = require("./routes/authRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const attendeeRoutes = require("./routes/attendeeRoutes");
 const verifyRoutes = require("./routes/verifyRoutes");
+const feedbackRoutes = require("./routes/feedbackRoutes");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/attendees", attendeeRoutes);
 app.use("/api/verify", verifyRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 // ─── NODEMAILER TRANSPORTER ──────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
@@ -239,165 +241,6 @@ app.patch("/api/events/complete/:eventId", async (req, res) => {
     message:
         `Event completed and feedback emails sent to ${attendees.length} attendees!`,
     });
-  } catch (err) {
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
-});
-
-// POST /api/feedback
-// GET /api/feedback/:token — Get attendee + event info for feedback page
-app.get("/api/feedback/:token", async (req, res) => {
-  try {
-    const [rows] = await pool.query(
-      `
-      SELECT
-        attendees.id AS attendee_id,
-        attendees.name,
-        attendees.email,
-        attendees.ticket_token,
-        events.id AS event_id,
-        events.title AS event_title,
-        events.venue,
-        events.event_date
-      FROM attendees
-      JOIN events
-        ON attendees.event_id = events.id
-      WHERE attendees.ticket_token = ?
-        AND attendees.payment_status = 'paid'
-      `,
-      [req.params.token]
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({
-        error: "Invalid feedback link.",
-      });
-    }
-
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
-});
-
-
-// ════════════════════════════════════════════════════════════════
-//  FEEDBACK ROUTES
-// ════════════════════════════════════════════════════════════════
-
-// POST /api/feedback — Submit attendee feedback
-app.post("/api/feedback", async (req, res) => {
-  const { ticket_token, rating, comments } = req.body;
-
-  if (!ticket_token || !rating) {
-    return res.status(400).json({
-      error: "Ticket token and rating are required.",
-    });
-  }
-
-  try {
-    // Verify attendee exists
-    const [attendeeRows] = await pool.query(
-      `
-      SELECT *
-      FROM attendees
-      WHERE ticket_token = ?
-      `,
-      [ticket_token]
-    );
-
-    if (attendeeRows.length === 0) {
-      return res.status(404).json({
-        error: "Invalid ticket token.",
-      });
-    }
-
-    const attendee = attendeeRows[0];
-
-    // Check if feedback already submitted
-    const [existingFeedback] = await pool.query(
-      `
-      SELECT id
-      FROM feedback
-      WHERE ticket_token = ?
-      `,
-      [ticket_token]
-    );
-
-    if (existingFeedback.length > 0) {
-      return res.status(409).json({
-        error: "Feedback already submitted.",
-      });
-    }
-
-    // Insert feedback
-    await pool.query(
-      `
-      INSERT INTO feedback (
-        event_id,
-        ticket_token,
-        rating,
-        comments
-      )
-      VALUES (?, ?, ?, ?)
-      `,
-      [
-        attendee.event_id,
-        ticket_token,
-        rating,
-        comments,
-      ]
-    );
-
-    res.json({
-      message: "Thank you for your feedback!",
-    });
-
-  } catch (err) {
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
-});
-
-// GET /api/feedback/event/:eventId — Get all feedback for an event
-app.get("/api/feedback/event/:eventId", async (req, res) => {
-  try {
-    // Get all feedback entries
-    const [feedbackRows] = await pool.query(
-      `
-      SELECT rating, comments
-      FROM feedback
-      WHERE event_id = ?
-      ORDER BY id DESC
-      `,
-      [req.params.eventId]
-    );
-
-    // Get average rating + total count
-    const [statsRows] = await pool.query(
-      `
-      SELECT 
-        AVG(rating) AS average_rating,
-        COUNT(*) AS total_feedback
-      FROM feedback
-      WHERE event_id = ?
-      `,
-      [req.params.eventId]
-    );
-
-    res.json({
-      feedback: feedbackRows,
-      stats: {
-        average_rating: statsRows[0].average_rating || 0,
-        total_feedback: statsRows[0].total_feedback || 0,
-      },
-    });
-
   } catch (err) {
     res.status(500).json({
       error: "Server error: " + err.message,
