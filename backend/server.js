@@ -3,25 +3,22 @@
 // Run: node server.js (after npm install express mysql2 qrcode nodemailer dotenv cors)
 
 require("dotenv").config();
+
 const express = require("express");
-const mysql = require("mysql2/promise");
 const QRCode = require("qrcode");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 
+const pool = require("./db");
+
+const authRoutes = require("./routes/authRoutes");
+
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// ─── DATABASE CONNECTION POOL ────────────────────────────────────────────────
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: "event_manager_db",
-  waitForConnections: true,
-  connectionLimit: 10,
-});
+app.use("/api/auth", authRoutes);
 
 // ─── NODEMAILER TRANSPORTER ──────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
@@ -99,47 +96,6 @@ async function initializeDatabase() {
     conn.release();
   }
 }
-
-// ════════════════════════════════════════════════════════════════
-//  AUTH ROUTES
-// ════════════════════════════════════════════════════════════════
-
-// POST /api/auth/register — Organizer Sign Up
-app.post("/api/auth/register", async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password)
-    return res.status(400).json({ error: "All fields are required." });
-
-  try {
-    const [result] = await pool.query(
-      "INSERT INTO organizers (name, email, password) VALUES (?, ?, ?)",
-      [name, email, password]
-    );
-    res.json({ message: "Registered successfully!", id: result.insertId, name, email });
-  } catch (err) {
-    if (err.code === "ER_DUP_ENTRY")
-      return res.status(409).json({ error: "Email already registered." });
-    res.status(500).json({ error: "Server error: " + err.message });
-  }
-});
-
-// POST /api/auth/login — Organizer Sign In
-app.post("/api/auth/login", async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const [rows] = await pool.query(
-      "SELECT * FROM organizers WHERE email = ? AND password = ?",
-      [email, password]
-    );
-    if (rows.length === 0)
-      return res.status(401).json({ error: "Invalid email or password." });
-
-    const { id, name } = rows[0];
-    res.json({ message: "Login successful!", id, name, email });
-  } catch (err) {
-    res.status(500).json({ error: "Server error: " + err.message });
-  }
-});
 
 // ════════════════════════════════════════════════════════════════
 //  EVENT ROUTES
