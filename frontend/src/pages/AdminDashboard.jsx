@@ -3,15 +3,17 @@
 //  Route: /admin (protected)
 // ════════════════════════════════════════════════════════════════
 
-import { useState, useEffect } from "react";
-
 import { Link } from "react-router-dom";
+
+import { useState, useEffect } from "react";
 
 import Navbar from "../components/Navbar";
 
-import API from "../services/api";
-
 import StatusBadge from "../components/StatusBadge";
+
+import EventCard from "../components/EventCard";
+
+import API from "../services/api";
 
 function AdminDashboard({ user, setUser }) {
   const [events, setEvents] = useState([]);
@@ -130,55 +132,16 @@ function AdminDashboard({ user, setUser }) {
         ) : (
           <div className="events-grid">
             {events.map((ev) => (
-              <div key={ev.id} className={`event-card ${selectedEvent?.id === ev.id ? "selected" : ""}`}>
-                <h3>{ev.title}</h3>
-                <p>📅 {new Date(ev.event_date).toLocaleString()}</p>
-                <p>📍 {ev.venue}</p>
-                <p>💰 ₹{ev.price}</p>
-                <div className="event-card-actions">
-                  <button
-                    className="btn btn-outline btn-sm"
-                    onClick={() => loadAttendees(ev)}
-                  >
-                    View Attendees
-                  </button>
 
-                  <a
-                    href={`/register/${ev.id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn btn-sm"
-                  >
-                    Registration Link ↗
-                  </a>
+            <EventCard
+                key={ev.id}
+                event={ev}
+                selectedEvent={selectedEvent}
+                loadAttendees={loadAttendees}
+                completeEvent={completeEvent}
+                loadFeedback={loadFeedback}
+            />
 
-                  <Link
-                    to="/scanner"
-                    className="btn btn-success btn-sm"
-                  >
-                    🎥 Scan Tickets
-                  </Link>
-                  <button
-                    className={`btn btn-sm ${
-                      ev.is_completed
-                        ? "btn-disabled"
-                        : "btn-danger"
-                    }`}
-                    disabled={ev.is_completed}
-                    onClick={() => completeEvent(ev.id)}
-                  >
-                    {ev.is_completed
-                      ? "✅ Event Completed"
-                      : "Finish Event"}
-                  </button>
-                  <button
-                    className="btn btn-outline btn-sm"
-                    onClick={() => loadFeedback(ev)}
-                  >
-                    ⭐ View Feedback
-                  </button>
-                </div>
-              </div>
             ))}
           </div>
         )}
