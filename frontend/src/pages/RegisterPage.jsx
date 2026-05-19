@@ -9,6 +9,8 @@ import { useParams } from "react-router-dom";
 
 import API from "../services/api";
 
+import LoadingSpinner from "../components/LoadingSpinner";
+
 function RegisterPage() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
@@ -55,7 +57,12 @@ function RegisterPage() {
   }
 
   if (pageError) return <div className="center-msg">❌ {pageError}</div>;
-  if (!event) return <div className="center-msg">Loading event details...</div>;
+  if (!event)
+  return (
+    <LoadingSpinner
+      text="Loading event details..."
+    />
+  );
 
   // Build UPI payment QR URL using free public API
   const upiString = `upi://pay?pa=${event.organizer_upi_id}&pn=EventPayment&am=${event.price}&cu=INR&tn=EventTicket`;

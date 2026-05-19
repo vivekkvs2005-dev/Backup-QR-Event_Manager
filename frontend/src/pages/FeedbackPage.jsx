@@ -6,6 +6,8 @@ import { useParams } from "react-router-dom";
 
 import API from "../services/api";
 
+import LoadingSpinner from "../components/LoadingSpinner";
+
 function FeedbackPage() {
   const { token } = useParams();
 
@@ -75,9 +77,9 @@ function FeedbackPage() {
 
   if (!data) {
     return (
-      <div className="center-msg">
-        Loading feedback page...
-      </div>
+      <LoadingSpinner
+        text="Loading feedback page..."
+      />
     );
   }
 

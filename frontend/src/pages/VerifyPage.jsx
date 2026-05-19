@@ -9,6 +9,8 @@ import { useParams } from "react-router-dom";
 
 import API from "../services/api";
 
+import LoadingSpinner from "../components/LoadingSpinner";
+
 function VerifyPage() {
   const { token } = useParams();
   const [attendee, setAttendee] = useState(null);
@@ -64,7 +66,9 @@ function VerifyPage() {
     </div>
   );
 }
-  if (!attendee) return <div className="center-msg">🔍 Verifying ticket...</div>;
+  if (!attendee) return <LoadingSpinner
+    text="🔍 Verifying ticket..."
+    />;
 
   const isValid = attendee.payment_status === "paid";
   const alreadyUsed = attendee.checked_in;
