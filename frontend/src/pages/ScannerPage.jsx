@@ -5,12 +5,53 @@ import { useNavigate } from "react-router-dom";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 
 function ScannerPage() {
+
   const navigate = useNavigate();
 
   const [scanError, setScanError] = useState("");
-  const [scannerStarted, setScannerStarted] = useState(false);
-  const [hasScanned, setHasScanned] = useState(false);
-  const [scannerStatus, setScannerStatus] = useState("starting");
+
+  const [scannerStarted, setScannerStarted] =
+    useState(false);
+
+  const [hasScanned, setHasScanned] =
+    useState(false);
+
+  const [scannerStatus, setScannerStatus] =
+    useState("starting");
+
+  // ════════════════════════════════════════════════
+  // TOKEN EXTRACTION HELPER
+  // Supports:
+  // - Full URL QR
+  // - Raw token QR
+  // - Whitespace/newline cleanup
+  // ════════════════════════════════════════════════
+
+  function extractToken(decodedText) {
+
+    const cleanedText =
+      decodedText.trim();
+
+    // Full URL QR
+    if (
+      cleanedText.includes("/verify/")
+    ) {
+
+      const verifyIndex =
+        cleanedText.indexOf("/verify/");
+
+      return cleanedText
+        .substring(verifyIndex + 8)
+        .trim();
+    }
+
+    // Raw token QR
+    return cleanedText;
+  }
+
+  // ════════════════════════════════════════════════
+  // Upload QR Image
+  // ════════════════════════════════════════════════
 
   async function handleImageUpload(event) {
 
@@ -20,140 +61,210 @@ function ScannerPage() {
 
     try {
 
-      setScanError("");
-      setScannerStatus("starting");
+        setScanError("");
 
-      const imageUrl = URL.createObjectURL(file);
+        setScannerStatus("starting");
 
-      const codeReader =
+        const imageUrl =
+        URL.createObjectURL(file);
+
+        // Load image
+        const img = new Image();
+
+        img.src = imageUrl;
+
+        await new Promise((resolve) => {
+        img.onload = resolve;
+        });
+
+        // Create canvas
+        const canvas =
+        document.createElement("canvas");
+
+        const ctx =
+        canvas.getContext("2d");
+
+        // Enlarge image for better QR detection
+        canvas.width = img.width * 2;
+
+        canvas.height = img.height * 2;
+
+        ctx.drawImage(
+        img,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+        );
+
+        const codeReader =
         new BrowserMultiFormatReader();
 
-      const result =
-        await codeReader.decodeFromImageUrl(imageUrl);
+        // Decode from enlarged canvas
+        const result =
+        await codeReader.decodeFromCanvas(
+            canvas
+        );
 
-      const decodedText = result.getText();
+        const decodedText =
+        result.getText();
 
-      const parts =
-        decodedText.split("/verify/");
+        const token =
+        extractToken(decodedText);
 
-      const token = parts[1];
+        URL.revokeObjectURL(imageUrl);
 
-      if (token) {
-
-        setScannerStatus("success");
-
-        setTimeout(() => {
-          navigate(`/verify/${token}`);
-        }, 600);
-
-      } else {
+        if (!token) {
 
         setScannerStatus("error");
 
         setScanError(
-          "Invalid QR format."
+            "Invalid QR format."
         );
-      }
+
+        return;
+        }
+
+        setScannerStatus("success");
+
+        setTimeout(() => {
+
+        navigate(`/verify/${token}`);
+
+        }, 600);
 
     } catch (error) {
 
-      console.error(error);
+        console.error(error);
 
-      setScannerStatus("error");
+        setScannerStatus("error");
 
-      setScanError(
+        setScanError(
         "No valid QR code found in image."
-      );
+        );
     }
-  }
+    }
+
+  // ════════════════════════════════════════════════
+  // Camera Scanner
+  // ════════════════════════════════════════════════
 
   useEffect(() => {
+
     let mounted = true;
 
-    const codeReader = new BrowserMultiFormatReader();
+    const codeReader =
+      new BrowserMultiFormatReader();
 
     let controls = null;
 
-
     async function startScanner() {
+
       try {
+
         setScanError("");
 
         // Get available cameras
         const videoInputDevices =
-          await BrowserMultiFormatReader.listVideoInputDevices();
+          await BrowserMultiFormatReader
+            .listVideoInputDevices();
 
         if (!videoInputDevices.length) {
-          setScanError("No camera device found.");
+
+          setScanError(
+            "No camera device found."
+          );
+
           return;
         }
 
         // Prefer rear camera on phones
         const rearCamera =
-          videoInputDevices.find((device) =>
-            device.label.toLowerCase().includes("back")
+          videoInputDevices.find(
+            (device) =>
+              device.label
+                .toLowerCase()
+                .includes("back")
           ) || videoInputDevices[0];
 
         if (!mounted) return;
 
         setScannerStarted(true);
+
         setScannerStatus("ready");
 
-        controls = await codeReader.decodeFromVideoDevice(
-          rearCamera.deviceId,
-          "reader",
-          (result, err) => {
+        controls =
+          await codeReader.decodeFromVideoDevice(
+            rearCamera.deviceId,
+            "reader",
+            (result, err) => {
 
-            // Successful QR detection
-            if (result) {
-              const decodedText = result.getText();
+              // Successful QR detection
+              if (result) {
 
-              try {
-                const parts =
-                  decodedText.split("/verify/");
+                const decodedText =
+                  result.getText();
 
-                const token = parts[1];
+                try {
 
-                if (token && !hasScanned) {
+                  const token =
+                    extractToken(decodedText);
 
-                  setHasScanned(true);
-                  setScannerStatus("success");
+                  if (!token) {
 
-                  if (controls) {
-                    controls.stop();
+                    setScanError(
+                      "Invalid QR format."
+                    );
+
+                    return;
                   }
 
-                  setTimeout(() => {
-                    navigate(`/verify/${token}`);
-                  }, 600);
+                  if (
+                    token &&
+                    !hasScanned
+                  ) {
 
-                } else if (!token) {
+                    setHasScanned(true);
 
-                  setScanError("Invalid QR format.");
+                    setScannerStatus(
+                      "success"
+                    );
 
-                } else {
-                  setScanError("Invalid QR format.");
+                    if (controls) {
+                      controls.stop();
+                    }
+
+                    setTimeout(() => {
+
+                      navigate(
+                        `/verify/${token}`
+                      );
+
+                    }, 600);
+                  }
+
+                } catch {
+
+                  setScanError(
+                    "Failed to process QR code."
+                  );
                 }
+              }
 
-              } catch {
-                setScanError(
-                  "Failed to process QR code."
-                );
+              // Ignore continuous frame scan errors
+              if (err) {
               }
             }
-
-            // Ignore continuous frame scan errors
-            if (err) {
-            }
-          }
-        );
+          );
 
       } catch (error) {
+
         console.error(error);
 
         setScanError(
           "Camera permission denied or scanner failed to start."
         );
+
         setScannerStatus("error");
       }
     }
@@ -161,6 +272,7 @@ function ScannerPage() {
     startScanner();
 
     return () => {
+
       mounted = false;
 
       if (controls) {
@@ -168,10 +280,12 @@ function ScannerPage() {
       }
     };
 
-  }, [navigate]);
+  }, [navigate, hasScanned]);
 
   return (
+
     <div className="public-page">
+
       <div className="card scanner-card">
 
         <h2 className="card-title">
@@ -195,12 +309,14 @@ function ScannerPage() {
         </p>
 
         {scanError && (
+
           <p className="msg error">
             {scanError}
           </p>
         )}
 
         {!scannerStarted && (
+
           <p className="scanner-text">
             Starting camera...
           </p>
@@ -240,9 +356,10 @@ function ScannerPage() {
             Upload screenshot or photo of QR ticket
           </p>
 
-</div>
+        </div>
 
       </div>
+
     </div>
   );
 }
