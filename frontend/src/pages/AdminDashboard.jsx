@@ -11,6 +11,8 @@ import Navbar from "../components/Navbar";
 
 import API from "../services/api";
 
+import StatusBadge from "../components/StatusBadge";
+
 function AdminDashboard({ user, setUser }) {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -113,11 +115,6 @@ function AdminDashboard({ user, setUser }) {
     }
   }
 
-  const statusBadge = (status) => {
-    const map = { under_review: "badge-warning", paid: "badge-success", failed: "badge-danger" };
-    return <span className={`badge ${map[status]}`}>{status.replace("_", " ")}</span>;
-  };
-
   return (
     <div>
       <Navbar user={user} setUser={setUser} />
@@ -215,7 +212,7 @@ function AdminDashboard({ user, setUser }) {
                         <td>{a.email}</td>
                         <td>{a.phone || "—"}</td>
                         <td><code>{a.upi_utr}</code></td>
-                        <td>{statusBadge(a.payment_status)}</td>
+                        <td><StatusBadge status={a.payment_status} /></td>
                         <td>
                           {a.payment_status === "under_review" && (
                             <div className="action-btns">
