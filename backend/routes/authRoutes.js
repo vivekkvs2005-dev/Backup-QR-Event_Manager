@@ -11,8 +11,30 @@ const {
 
 const router = express.Router();
 
-router.post("/register", registerOrganizer);
+const validateRequiredFields =
+  require("../middleware/validateRequiredFields");
 
-router.post("/login", loginOrganizer);
+router.post(
+  "/register",
+
+  validateRequiredFields([
+    "name",
+    "email",
+    "password",
+  ]),
+
+  registerOrganizer
+);
+
+router.post(
+  "/login",
+
+  validateRequiredFields([
+    "email",
+    "password",
+  ]),
+
+  loginOrganizer
+);
 
 module.exports = router;
