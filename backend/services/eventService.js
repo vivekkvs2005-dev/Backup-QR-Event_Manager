@@ -1,0 +1,202 @@
+const pool = require("../db");
+
+const transporter =
+  require("../utils/mailer");
+
+async function createEventService(
+  eventData
+) {
+
+  const {
+    organizer_id,
+    title,
+    description,
+    event_date,
+    venue,
+    price,
+    organizer_upi_id,
+    organizer_email,
+  } = eventData;
+
+  const mysqlDate =
+    event_date
+      ? event_date.replace("T", " ")
+      : null;
+
+  const [result] = await pool.query(
+    `
+    INSERT INTO events (
+      organizer_id,
+      title,
+      description,
+      event_date,
+      venue,
+      price,
+      organizer_upi_id,
+      organizer_email
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      organizer_id,
+      title,
+      description,
+      mysqlDate,
+      venue,
+      price,
+      organizer_upi_id,
+      organizer_email,
+    ]
+  );
+
+  return result.insertId;
+}
+
+async function getEventService(id) {
+
+  const [rows] = await pool.query(
+    `
+    SELECT *
+    FROM events
+    WHERE id = ?
+    `,
+    [id]
+  );
+
+  return rows[0] || null;
+}
+
+async function getOrganizerEventsService(
+  organizerId
+) {
+
+  const [rows] = await pool.query(
+    `
+    SELECT *
+    FROM events
+    WHERE organizer_id = ?
+    ORDER BY event_date DESC
+    `,
+    [organizerId]
+  );
+
+  return rows;
+}
+
+async function completeEventService(
+  eventId
+) {
+
+  await pool.query(
+    `
+    UPDATE events
+    SET is_completed = TRUE
+    WHERE id = ?
+    `,
+    [eventId]
+  );
+
+  const [attendees] = await pool.query(
+    `
+    SELECT
+      attendees.name,
+      attendees.email,
+      attendees.ticket_token,
+      events.title AS event_title
+    FROM attendees
+    JOIN events
+      ON attendees.event_id = events.id
+    WHERE attendees.event_id = ?
+      AND attendees.payment_status = 'paid'
+    `,
+    [eventId]
+  );
+
+  for (const attendee of attendees) {
+
+    const feedbackUrl =
+      `${process.env.FRONTEND_URL}/feedback/${attendee.ticket_token}`;
+
+    await transporter.sendMail({
+      from:
+        `"Event Manager" <${process.env.EMAIL_USER}>`,
+
+      to: attendee.email,
+
+      subject:
+        `💬 Share Feedback — ${attendee.event_title}`,
+
+      html: `
+      <div style="
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+      ">
+
+        <h1 style="
+          color:#2563eb;
+          text-align:center;
+        ">
+          🎉 Thank You for Attending
+        </h1>
+
+        <p>
+          Hello <strong>${attendee.name}</strong>,
+        </p>
+
+        <p>
+          Thank you for attending
+          <strong>${attendee.event_title}</strong>.
+        </p>
+
+        <p>
+          We would love to hear your feedback.
+        </p>
+
+        <div style="
+          text-align:center;
+          margin:30px 0;
+        ">
+
+          <a
+            href="${feedbackUrl}"
+            style="
+              background:#2563eb;
+              color:white;
+              padding:14px 22px;
+              border-radius:8px;
+              text-decoration:none;
+              font-weight:bold;
+              display:inline-block;
+            "
+          >
+            Submit Feedback
+          </a>
+
+        </div>
+
+        <p>
+          Your feedback helps us improve future events.
+        </p>
+
+        <p>
+          Thank you again 🎊
+        </p>
+
+      </div>
+      `,
+    });
+  }
+
+  return attendees.length;
+}
+
+module.exports = {
+  createEventService,
+  getEventService,
+  getOrganizerEventsService,
+  completeEventService,
+};
