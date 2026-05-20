@@ -6,6 +6,10 @@ const generateTicketToken =  require("../utils/tokenGenerator");
 
 const generateQRCode =  require("../utils/qrGenerator");
 
+const {
+  formatEventDate,
+} = require("../utils/formatters");
+
 async function registerAttendee(req, res) {
   const {
     event_id,
@@ -133,9 +137,9 @@ async function approveAttendee(req, res) {
       await generateQRCode(verifyUrl);
 
     const formattedDate =
-      new Date(
-        attendee.event_date
-      ).toLocaleString();
+    formatEventDate(
+      attendee.event_date
+    );
 
     await transporter.sendMail({
       from:
