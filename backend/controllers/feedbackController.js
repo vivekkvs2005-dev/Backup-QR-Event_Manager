@@ -1,6 +1,10 @@
 const pool = require("../db");
 
-async function getFeedbackPage(req, res) {
+async function getFeedbackPage(
+  req,
+  res,
+  next
+) {
   try {
 
     const [rows] = await pool.query(
@@ -33,13 +37,15 @@ async function getFeedbackPage(req, res) {
 
   } catch (err) {
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 
-async function submitFeedback(req, res) {
+async function submitFeedback(
+  req,
+  res,
+  next
+) {
   const {
     ticket_token,
     rating,
@@ -104,13 +110,15 @@ async function submitFeedback(req, res) {
 
   } catch (err) {
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 
-async function getEventFeedback(req, res) {
+async function getEventFeedback(
+  req,
+  res,
+  next
+) {
   try {
 
     const [feedbackRows] = await pool.query(
@@ -148,9 +156,7 @@ async function getEventFeedback(req, res) {
 
   } catch (err) {
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 

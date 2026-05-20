@@ -10,7 +10,11 @@ const {
   formatEventDate,
 } = require("../utils/formatters");
 
-async function registerAttendee(req, res) {
+async function registerAttendee(
+  req,
+  res,
+  next
+) {
   const {
     event_id,
     name,
@@ -55,13 +59,15 @@ async function registerAttendee(req, res) {
       });
     }
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 
-async function getEventAttendees(req, res) {
+async function getEventAttendees(
+  req,
+  res,
+  next
+) {
   try {
 
     const [rows] = await pool.query(
@@ -77,14 +83,15 @@ async function getEventAttendees(req, res) {
     res.json(rows);
 
   } catch (err) {
-
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
+      next(err);
+    }
 }
 
-async function approveAttendee(req, res) {
+async function approveAttendee(
+  req,
+  res,
+  next
+) {
   const { attendeeId } = req.params;
 
   try {
@@ -233,15 +240,17 @@ async function approveAttendee(req, res) {
 
   } catch (err) {
 
-    console.log(err);
+      console.log(err);
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+      next(err);
   }
 }
 
-async function rejectAttendee(req, res) {
+async function rejectAttendee(
+  req,
+  res,
+  next
+) {
   try {
 
     await pool.query(
@@ -258,11 +267,8 @@ async function rejectAttendee(req, res) {
     });
 
   } catch (err) {
-
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
+      next(err);
+    }
 }
 
 module.exports = {

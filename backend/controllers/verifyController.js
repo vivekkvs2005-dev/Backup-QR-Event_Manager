@@ -1,6 +1,10 @@
 const pool = require("../db");
 
-async function verifyTicket(req, res) {
+async function verifyTicket(
+  req,
+  res,
+  next
+) {
   try {
 
     const [rows] = await pool.query(
@@ -29,13 +33,15 @@ async function verifyTicket(req, res) {
 
   } catch (err) {
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 
-async function markCheckIn(req, res) {
+async function markCheckIn(
+  req,
+  res,
+  next
+) {
   try {
 
     const [rows] = await pool.query(
@@ -74,13 +80,15 @@ async function markCheckIn(req, res) {
 
   } catch (err) {
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 
-async function markLunch(req, res) {
+async function markLunch(
+  req,
+  res,
+  next
+) {
   try {
 
     const [rows] = await pool.query(
@@ -119,13 +127,15 @@ async function markLunch(req, res) {
 
   } catch (err) {
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 
-async function markKit(req, res) {
+async function markKit(
+  req,
+  res,
+  next
+) {
   try {
 
     const [rows] = await pool.query(
@@ -164,9 +174,7 @@ async function markKit(req, res) {
 
   } catch (err) {
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 

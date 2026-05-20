@@ -2,7 +2,11 @@ const pool = require("../db");
 
 const transporter = require("../utils/mailer");
 
-async function createEvent(req, res) {
+async function createEvent(
+  req,
+  res,
+  next
+) {
   const {
     organizer_id,
     title,
@@ -53,14 +57,15 @@ async function createEvent(req, res) {
     });
 
   } catch (err) {
-
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
+      next(err);
+    }
 }
 
-async function getEvent(req, res) {
+async function getEvent(
+  req,
+  res,
+  next
+) {
   try {
 
     const [rows] = await pool.query(
@@ -81,14 +86,15 @@ async function getEvent(req, res) {
     res.json(rows[0]);
 
   } catch (err) {
-
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
+      next(err);
+    }
 }
 
-async function getOrganizerEvents(req, res) {
+async function getOrganizerEvents(
+  req,
+  res,
+  next
+) {
   try {
 
     const [rows] = await pool.query(
@@ -104,14 +110,15 @@ async function getOrganizerEvents(req, res) {
     res.json(rows);
 
   } catch (err) {
-
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
+      next(err);
+    }
 }
 
-async function completeEvent(req, res) {
+async function completeEvent(
+  req,
+  res,
+  next
+) {
   try {
 
     const { eventId } = req.params;
@@ -223,11 +230,8 @@ async function completeEvent(req, res) {
     });
 
   } catch (err) {
-
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
+      next(err);
+    }
 }
 
 module.exports = {
