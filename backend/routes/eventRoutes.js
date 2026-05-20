@@ -16,8 +16,14 @@ const router = express.Router();
 const validateRequiredFields =
   require("../middleware/validateRequiredFields");
 
+const {
+    protect,
+  } = require("../middleware/authMiddleware");
+
 router.post(
   "/",
+
+  protect,
 
   validateRequiredFields([
     "organizer_id",
@@ -32,11 +38,17 @@ router.get("/:id", getEvent);
 
 router.get(
   "/organizer/:organizerId",
+
+  protect,  
+
   getOrganizerEvents
 );
 
 router.patch(
   "/complete/:eventId",
+
+  protect,
+
   completeEvent
 );
 

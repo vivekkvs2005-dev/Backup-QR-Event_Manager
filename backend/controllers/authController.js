@@ -3,6 +3,9 @@ const {
   loginOrganizerService,
 } = require("../services/authService");
 
+const generateToken =
+  require("../utils/generateToken");
+
 async function registerOrganizer(
   req,
   res,
@@ -57,11 +60,15 @@ async function loginOrganizer(
 
     const { id, name } = organizer;
 
+    const token =
+      generateToken(organizer);
+
     res.json({
       message: "Login successful!",
       id,
       name,
       email,
+      token,
     });
 
   } catch (err) {

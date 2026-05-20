@@ -1,10 +1,14 @@
 const pool = require("../db");
+const bcrypt = require("bcryptjs");
 
 async function registerOrganizerService(
   name,
   email,
   password
 ) {
+
+  const hashedPassword =
+    await bcrypt.hash(password, 10);
 
   const [result] = await pool.query(
     `
@@ -15,7 +19,7 @@ async function registerOrganizerService(
     )
     VALUES (?, ?, ?)
     `,
-    [name, email, password]
+    [name, email, hashedPassword]
   );
 
   return {
@@ -35,16 +39,28 @@ async function loginOrganizerService(
     SELECT *
     FROM organizers
     WHERE email = ?
-      AND password = ?
     `,
-    [email, password]
+    [email]
   );
 
   if (rows.length === 0) {
     return null;
   }
 
-  return rows[0];
+  const organizer =
+    rows[0];
+
+  const isPasswordValid =
+    await bcrypt.compare(
+      password,
+      organizer.password
+    );
+
+  if (!isPasswordValid) {
+    return null;
+  }
+
+  return organizer;
 }
 
 module.exports = {
