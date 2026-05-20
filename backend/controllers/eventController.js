@@ -13,8 +13,17 @@ async function createEvent(
 
   try {
 
+    const eventData = {
+      ...req.body,
+
+      organizer_id:
+        req.user.id,
+    };
+
     const eventId =
-      await createEventService(req.body);
+      await createEventService(
+        eventData
+      );
 
     res.json({
       message: "Event created!",

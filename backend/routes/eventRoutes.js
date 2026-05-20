@@ -20,13 +20,15 @@ const {
     protect,
   } = require("../middleware/authMiddleware");
 
+const checkEventOwnership =
+  require("../middleware/checkEventOwnership");
+
 router.post(
   "/",
 
   protect,
 
   validateRequiredFields([
-    "organizer_id",
     "title",
     "event_date",
   ]),
@@ -48,6 +50,8 @@ router.patch(
   "/complete/:eventId",
 
   protect,
+
+  checkEventOwnership,
 
   completeEvent
 );
