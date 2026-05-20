@@ -20,6 +20,10 @@ import FeedbackCard from "../components/FeedbackCard";
 
 import AttendeeTable from "../components/AttendeeTable";
 
+import {
+  handleUnauthorized,
+} from "../services/authHeader";
+
 function AdminDashboard({ user, setUser }) {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -53,6 +57,10 @@ function AdminDashboard({ user, setUser }) {
     setMessage("");
     const res = await fetch(API + "/attendees/event/" + event.id);
     const data = await res.json();
+        if (res.status === 401) {
+          handleUnauthorized();
+          return;
+        }
     setAttendees(data);
   }
 
@@ -62,6 +70,10 @@ function AdminDashboard({ user, setUser }) {
     try {
       const res = await fetch(API + "/attendees/approve/" + id, { method: "POST" });
       const data = await res.json();
+      if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
       setMessage(data.message || data.error);
       loadAttendees(selectedEvent); // Refresh list
     } catch {
@@ -77,6 +89,10 @@ function AdminDashboard({ user, setUser }) {
     try {
       const res = await fetch(API + "/attendees/reject/" + id, { method: "POST" });
       const data = await res.json();
+      if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
       setMessage(data.message || data.error);
       loadAttendees(selectedEvent);
     } catch {
@@ -95,6 +111,10 @@ function AdminDashboard({ user, setUser }) {
       );
 
       const data = await res.json();
+      if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
 
       setFeedbackData(data.feedback || []);
       setFeedbackStats(data.stats || null);
@@ -120,6 +140,10 @@ function AdminDashboard({ user, setUser }) {
       );
 
       const data = await res.json();
+      if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
 
       setMessage(data.message || data.error);
 

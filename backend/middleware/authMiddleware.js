@@ -1,6 +1,8 @@
+const pool = require("../db");
+
 const jwt = require("jsonwebtoken");
 
-function protect(
+async function protect(
   req,
   res,
   next
@@ -28,6 +30,21 @@ function protect(
         token,
         process.env.JWT_SECRET
       );
+
+    const [rows] = await pool.query(
+      `
+      SELECT id
+      FROM organizers
+      WHERE id = ?
+      `,
+      [decoded.id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(401).json({
+        error: "Organizer no longer exists.",
+      });
+    }
 
     req.user = decoded;
 

@@ -3,20 +3,12 @@
 // Install: npm install react-router-dom
 
 // External libraries
-import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-
-
-// Internal services
-import API from "./services/api";
-
-// Internal components
-import Navbar from "./components/Navbar";
 
 // Internal pages
 import AuthPage from "./pages/AuthPage";
@@ -27,7 +19,7 @@ import VerifyPage from "./pages/VerifyPage";
 import FeedbackPage from "./pages/FeedbackPage";
 import AdminDashboard from "./pages/AdminDashboard";
 
-
+import useAuthSession from "./hooks/useAuthSession";
 
 // ════════════════════════════════════════════════════════════════
 //  GLOBAL APP with Router + State
@@ -35,7 +27,10 @@ import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
   // 'user' holds the logged-in organizer globally (null = not logged in)
-  const [user, setUser] = useState(null);
+  const {
+      user,
+      setUser,
+    } = useAuthSession();
 
   return (
     <Router>

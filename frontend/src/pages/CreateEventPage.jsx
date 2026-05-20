@@ -12,6 +12,10 @@ import API from "../services/api";
 import getAuthHeaders
   from "../services/authHeader";
 
+import {
+  handleUnauthorized,
+} from "../services/authHeader";
+
 function CreateEventPage({ user, setUser }) {
   const [form, setForm] = useState({
     title: "",
@@ -49,6 +53,10 @@ function CreateEventPage({ user, setUser }) {
         body: JSON.stringify(form),
       });
       const data = await res.json();
+            if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
       if (!res.ok) {
         setError(data.error || "Failed to create event.");
       } else {

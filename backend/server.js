@@ -5,7 +5,6 @@
 require("dotenv").config();
 
 const express = require("express");
-const nodemailer = require("nodemailer");
 const cors = require("cors");
 
 const pool = require("./db");
@@ -28,15 +27,6 @@ app.use("/api/events", eventRoutes);
 app.use("/api/attendees", attendeeRoutes);
 app.use("/api/verify", verifyRoutes);
 app.use("/api/feedback", feedbackRoutes);
-
-// ─── NODEMAILER TRANSPORTER ──────────────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Use Gmail App Password
-  },
-});
 
 // ─── DATABASE SETUP (Run once to create tables) ──────────────────────────────
 async function initializeDatabase() {
@@ -105,150 +95,6 @@ async function initializeDatabase() {
     conn.release();
   }
 }
-
-// GET /api/events/:id — Get single event details (public, for registration page)
-app.get("/api/events/:id", async (req, res) => {
-  try {
-    const [rows] = await pool.query("SELECT * FROM events WHERE id = ?", [req.params.id]);
-    if (rows.length === 0) return res.status(404).json({ error: "Event not found." });
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: "Server error: " + err.message });
-  }
-});
-
-// GET /api/events/organizer/:organizerId — Get all events for an organizer (dashboard)
-app.get("/api/events/organizer/:organizerId", async (req, res) => {
-  try {
-    const [rows] = await pool.query(
-      "SELECT * FROM events WHERE organizer_id = ? ORDER BY event_date DESC",
-      [req.params.organizerId]
-    );
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: "Server error: " + err.message });
-  }
-});
-
-// PATCH /api/events/complete/:eventId — Mark event completed
-app.patch("/api/events/complete/:eventId", async (req, res) => {
-  try {
-    const { eventId } = req.params;
-
-    // Mark event completed
-    await pool.query(
-    `
-    UPDATE events
-    SET is_completed = TRUE
-    WHERE id = ?
-    `,
-    [eventId]
-    );
-
-    // Fetch all paid attendees + event details
-    const [attendees] = await pool.query(
-    `
-    SELECT
-        attendees.name,
-        attendees.email,
-        attendees.ticket_token,
-        events.title AS event_title
-    FROM attendees
-    JOIN events
-        ON attendees.event_id = events.id
-    WHERE attendees.event_id = ?
-        AND attendees.payment_status = 'paid'
-    `,
-    [eventId]
-    );
-
-    // Send feedback emails
-    for (const attendee of attendees) {
-
-    const feedbackUrl =
-        `${process.env.FRONTEND_URL}/feedback/${attendee.ticket_token}`;
-
-    await transporter.sendMail({
-        from: `"Event Manager" <${process.env.EMAIL_USER}>`,
-        to: attendee.email,
-
-        subject: `💬 Share Feedback — ${attendee.event_title}`,
-
-        html: `
-        <div style="
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-        ">
-
-            <h1 style="
-            color:#2563eb;
-            text-align:center;
-            ">
-            🎉 Thank You for Attending
-            </h1>
-
-            <p>
-            Hello <strong>${attendee.name}</strong>,
-            </p>
-
-            <p>
-            Thank you for attending
-            <strong>${attendee.event_title}</strong>.
-            </p>
-
-            <p>
-            We would love to hear your feedback.
-            </p>
-
-            <div style="
-            text-align:center;
-            margin:30px 0;
-            ">
-
-            <a
-                href="${feedbackUrl}"
-                style="
-                background:#2563eb;
-                color:white;
-                padding:14px 22px;
-                border-radius:8px;
-                text-decoration:none;
-                font-weight:bold;
-                display:inline-block;
-                "
-            >
-                Submit Feedback
-            </a>
-
-            </div>
-
-            <p>
-            Your feedback helps us improve future events.
-            </p>
-
-            <p>
-            Thank you again 🎊
-            </p>
-
-        </div>
-        `,
-    });
-    }
-
-    res.json({
-    message:
-        `Event completed and feedback emails sent to ${attendees.length} attendees!`,
-    });
-  } catch (err) {
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
-  }
-});
 
 app.use(errorHandler);
 // ─── START SERVER ────────────────────────────────────────────────────────────
