@@ -1,4 +1,7 @@
-const pool = require("../db");
+const {
+  registerOrganizerService,
+  loginOrganizerService,
+} = require("../services/authService");
 
 async function registerOrganizer(
   req,
@@ -8,23 +11,16 @@ async function registerOrganizer(
   const { name, email, password } = req.body;
 
   try {
-    const [result] = await pool.query(
-      `
-      INSERT INTO organizers (
-        name,
-        email,
-        password
-      )
-      VALUES (?, ?, ?)
-      `,
-      [name, email, password]
+    const organizer =
+    await registerOrganizerService(
+      name,
+      email,
+      password
     );
 
     res.json({
       message: "Registered successfully!",
-      id: result.insertId,
-      name,
-      email,
+      ...organizer,
     });
 
   } catch (err) {
@@ -47,23 +43,19 @@ async function loginOrganizer(
   const { email, password } = req.body;
 
   try {
-    const [rows] = await pool.query(
-      `
-      SELECT *
-      FROM organizers
-      WHERE email = ?
-        AND password = ?
-      `,
-      [email, password]
-    );
+    const organizer =
+      await loginOrganizerService(
+        email,
+        password
+      );
 
-    if (rows.length === 0) {
+    if (!organizer) {
       return res.status(401).json({
         error: "Invalid email or password.",
       });
     }
 
-    const { id, name } = rows[0];
+    const { id, name } = organizer;
 
     res.json({
       message: "Login successful!",
