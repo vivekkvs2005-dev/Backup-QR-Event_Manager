@@ -1,4 +1,8 @@
-const pool = require("../db");
+const {
+  getFeedbackPageDataService,
+  submitFeedbackService,
+  getEventFeedbackService,
+} = require("../services/feedbackService");
 
 async function getFeedbackPage(
   req,
@@ -7,33 +11,18 @@ async function getFeedbackPage(
 ) {
   try {
 
-    const [rows] = await pool.query(
-      `
-      SELECT
-        attendees.id AS attendee_id,
-        attendees.name,
-        attendees.email,
-        attendees.ticket_token,
-        events.id AS event_id,
-        events.title AS event_title,
-        events.venue,
-        events.event_date
-      FROM attendees
-      JOIN events
-        ON attendees.event_id = events.id
-      WHERE attendees.ticket_token = ?
-        AND attendees.payment_status = 'paid'
-      `,
-      [req.params.token]
-    );
+    const data =
+      await getFeedbackPageDataService(
+        req.params.token
+      );
 
-    if (rows.length === 0) {
+    if (!data) {
       return res.status(404).json({
         error: "Invalid feedback link.",
       });
     }
 
-    res.json(rows[0]);
+    res.json(data);
 
   } catch (err) {
 
@@ -46,66 +35,36 @@ async function submitFeedback(
   res,
   next
 ) {
-  const {
-    ticket_token,
-    rating,
-    comments,
-  } = req.body;
 
   try {
 
-    const [attendeeRows] = await pool.query(
-      `
-      SELECT *
-      FROM attendees
-      WHERE ticket_token = ?
-      `,
-      [ticket_token]
-    );
+    const result =
+      await submitFeedbackService(
+        req.body
+      );
 
-    if (attendeeRows.length === 0) {
+    if (
+      result.status ===
+      "INVALID_TOKEN"
+    ) {
       return res.status(404).json({
         error: "Invalid ticket token.",
       });
     }
 
-    const attendee = attendeeRows[0];
-
-    const [existingFeedback] = await pool.query(
-      `
-      SELECT id
-      FROM feedback
-      WHERE ticket_token = ?
-      `,
-      [ticket_token]
-    );
-
-    if (existingFeedback.length > 0) {
+    if (
+      result.status ===
+      "ALREADY_SUBMITTED"
+    ) {
       return res.status(409).json({
-        error: "Feedback already submitted.",
+        error:
+          "Feedback already submitted.",
       });
     }
 
-    await pool.query(
-      `
-      INSERT INTO feedback (
-        event_id,
-        ticket_token,
-        rating,
-        comments
-      )
-      VALUES (?, ?, ?, ?)
-      `,
-      [
-        attendee.event_id,
-        ticket_token,
-        rating,
-        comments,
-      ]
-    );
-
     res.json({
-      message: "Thank you for your feedback!",
+      message:
+        "Thank you for your feedback!",
     });
 
   } catch (err) {
@@ -121,38 +80,12 @@ async function getEventFeedback(
 ) {
   try {
 
-    const [feedbackRows] = await pool.query(
-      `
-      SELECT rating, comments
-      FROM feedback
-      WHERE event_id = ?
-      ORDER BY id DESC
-      `,
-      [req.params.eventId]
-    );
+    const feedbackData =
+      await getEventFeedbackService(
+        req.params.eventId
+      );
 
-    const [statsRows] = await pool.query(
-      `
-      SELECT
-        AVG(rating) AS average_rating,
-        COUNT(*) AS total_feedback
-      FROM feedback
-      WHERE event_id = ?
-      `,
-      [req.params.eventId]
-    );
-
-    res.json({
-      feedback: feedbackRows,
-
-      stats: {
-        average_rating:
-          statsRows[0].average_rating || 0,
-
-        total_feedback:
-          statsRows[0].total_feedback || 0,
-      },
-    });
+    res.json(feedbackData);
 
   } catch (err) {
 
