@@ -1,4 +1,9 @@
-const pool = require("../db");
+const {
+  getTicketDetailsService,
+  checkInService,
+  markLunchService,
+  markKitService,
+} = require("../services/verifyService");
 
 async function verifyTicket(
   req,
@@ -7,29 +12,19 @@ async function verifyTicket(
 ) {
   try {
 
-    const [rows] = await pool.query(
-      `
-      SELECT
-        attendees.*,
-        events.title AS event_title,
-        events.venue,
-        events.event_date
-      FROM attendees
-      JOIN events
-        ON attendees.event_id = events.id
-      WHERE attendees.ticket_token = ?
-      `,
-      [req.params.token]
-    );
+    const attendee =
+      await getTicketDetailsService(
+        req.params.token
+      );
 
-    if (rows.length === 0) {
+    if (!attendee) {
       return res.status(404).json({
         error:
           "Invalid or unrecognized ticket token.",
       });
     }
 
-    res.json(rows[0]);
+res.json(attendee);
 
   } catch (err) {
 
@@ -44,38 +39,29 @@ async function markCheckIn(
 ) {
   try {
 
-    const [rows] = await pool.query(
-      `
-      SELECT checked_in
-      FROM attendees
-      WHERE ticket_token = ?
-      `,
-      [req.params.token]
-    );
+    const result =
+      await checkInService(
+        req.params.token
+      );
 
-    if (rows.length === 0) {
+    if (result.status === "NOT_FOUND") {
       return res.status(404).json({
         error: "Token not found.",
       });
     }
 
-    if (rows[0].checked_in) {
+    if (
+      result.status ===
+      "ALREADY_CHECKED_IN"
+    ) {
       return res.status(409).json({
         error: "Already checked in!",
       });
     }
 
-    await pool.query(
-      `
-      UPDATE attendees
-      SET checked_in = TRUE
-      WHERE ticket_token = ?
-      `,
-      [req.params.token]
-    );
-
     res.json({
-      message: "Entry marked successfully!",
+      message:
+        "Entry marked successfully!",
     });
 
   } catch (err) {
@@ -91,38 +77,30 @@ async function markLunch(
 ) {
   try {
 
-    const [rows] = await pool.query(
-      `
-      SELECT lunch_served
-      FROM attendees
-      WHERE ticket_token = ?
-      `,
-      [req.params.token]
-    );
+    const result =
+      await markLunchService(
+        req.params.token
+      );
 
-    if (rows.length === 0) {
+    if (result.status === "NOT_FOUND") {
       return res.status(404).json({
         error: "Token not found.",
       });
     }
 
-    if (rows[0].lunch_served) {
+    if (
+      result.status ===
+      "ALREADY_SERVED"
+    ) {
       return res.status(409).json({
-        error: "Lunch already claimed!",
+        error:
+          "Lunch already claimed!",
       });
     }
 
-    await pool.query(
-      `
-      UPDATE attendees
-      SET lunch_served = TRUE
-      WHERE ticket_token = ?
-      `,
-      [req.params.token]
-    );
-
     res.json({
-      message: "Lunch marked as served!",
+      message:
+        "Lunch marked as served!",
     });
 
   } catch (err) {
@@ -138,38 +116,30 @@ async function markKit(
 ) {
   try {
 
-    const [rows] = await pool.query(
-      `
-      SELECT kit_distributed
-      FROM attendees
-      WHERE ticket_token = ?
-      `,
-      [req.params.token]
-    );
+    const result =
+      await markKitService(
+        req.params.token
+      );
 
-    if (rows.length === 0) {
+    if (result.status === "NOT_FOUND") {
       return res.status(404).json({
         error: "Token not found.",
       });
     }
 
-    if (rows[0].kit_distributed) {
+    if (
+      result.status ===
+      "ALREADY_DISTRIBUTED"
+    ) {
       return res.status(409).json({
-        error: "Kit already distributed!",
+        error:
+          "Kit already distributed!",
       });
     }
 
-    await pool.query(
-      `
-      UPDATE attendees
-      SET kit_distributed = TRUE
-      WHERE ticket_token = ?
-      `,
-      [req.params.token]
-    );
-
     res.json({
-      message: "Kit marked as distributed!",
+      message:
+        "Kit marked as distributed!",
     });
 
   } catch (err) {
