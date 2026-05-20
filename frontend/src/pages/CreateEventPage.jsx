@@ -46,7 +46,7 @@ function CreateEventPage({ user, setUser }) {
 
         ...getAuthHeaders(),
       },
-        body: JSON.stringify({ ...form, organizer_id: user.id }),
+        body: JSON.stringify(form),
       });
       const data = await res.json();
       if (!res.ok) {
