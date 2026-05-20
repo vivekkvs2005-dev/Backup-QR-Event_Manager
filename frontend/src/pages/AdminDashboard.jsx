@@ -13,6 +13,9 @@ import EventCard from "../components/EventCard";
 
 import API from "../services/api";
 
+import getAuthHeaders
+  from "../services/authHeader";
+
 import FeedbackCard from "../components/FeedbackCard";
 
 import AttendeeTable from "../components/AttendeeTable";
@@ -29,10 +32,20 @@ function AdminDashboard({ user, setUser }) {
 
   // Load organizer's events on mount
   useEffect(() => {
-    fetch(API + "/events/organizer/" + user.id)
+
+    fetch(
+      API + "/events/organizer/" + user.id,
+
+      {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      }
+    )
       .then((r) => r.json())
       .then(setEvents)
       .catch(() => {});
+
   }, [user.id]);
 
   async function loadAttendees(event) {
@@ -96,8 +109,13 @@ function AdminDashboard({ user, setUser }) {
     try {
       const res = await fetch(
         API + "/events/complete/" + eventId,
+
         {
           method: "PATCH",
+
+          headers: {
+            ...getAuthHeaders(),
+          },
         }
       );
 
@@ -107,7 +125,13 @@ function AdminDashboard({ user, setUser }) {
 
       // Refresh events
       const updated = await fetch(
-        API + "/events/organizer/" + user.id
+        API + "/events/organizer/" + user.id,
+
+        {
+          headers: {
+            ...getAuthHeaders(),
+          },
+        }
       );
 
       const updatedEvents = await updated.json();

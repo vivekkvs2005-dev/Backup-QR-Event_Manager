@@ -47,7 +47,14 @@ function AuthPage({ user, setUser }) {
         setError(data.error || "Something went wrong.");
       } else {
         if (isLogin) {
-          setUser(data); // Save organizer globally
+
+          localStorage.setItem(
+            "organizer",
+            JSON.stringify(data)
+          );
+
+          setUser(data);
+
           navigate("/");
         } else {
           setMessage("Registered! Please log in.");

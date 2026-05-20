@@ -9,6 +9,9 @@ import Navbar from "../components/Navbar";
 
 import API from "../services/api";
 
+import getAuthHeaders
+  from "../services/authHeader";
+
 function CreateEventPage({ user, setUser }) {
   const [form, setForm] = useState({
     title: "",
@@ -38,7 +41,11 @@ function CreateEventPage({ user, setUser }) {
     try {
       const res = await fetch(API + "/events", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+       headers: {
+        "Content-Type": "application/json",
+
+        ...getAuthHeaders(),
+      },
         body: JSON.stringify({ ...form, organizer_id: user.id }),
       });
       const data = await res.json();
