@@ -15,6 +15,8 @@ const eventRoutes = require("./routes/eventRoutes");
 const attendeeRoutes = require("./routes/attendeeRoutes");
 const verifyRoutes = require("./routes/verifyRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
+const errorHandler =
+  require("./middleware/errorHandler");
 
 const app = express();
 
@@ -248,6 +250,7 @@ app.patch("/api/events/complete/:eventId", async (req, res) => {
   }
 });
 
+app.use(errorHandler);
 // ─── START SERVER ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5001;
 

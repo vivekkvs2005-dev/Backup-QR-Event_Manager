@@ -1,6 +1,10 @@
 const pool = require("../db");
 
-async function registerOrganizer(req, res) {
+async function registerOrganizer(
+  req,
+  res,
+  next
+) {
   const { name, email, password } = req.body;
 
   try {
@@ -31,13 +35,15 @@ async function registerOrganizer(req, res) {
       });
     }
 
-    res.status(500).json({
-      error: "Server error: " + err.message,
-    });
+    next(err);
   }
 }
 
-async function loginOrganizer(req, res) {
+async function loginOrganizer(
+  req,
+  res,
+  next
+) {
   const { email, password } = req.body;
 
   try {
