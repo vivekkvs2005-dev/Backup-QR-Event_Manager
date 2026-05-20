@@ -1,10 +1,10 @@
 const pool = require("../db");
 
-const QRCode = require("qrcode");
-
 const transporter = require("../utils/mailer");
 
 const generateTicketToken =  require("../utils/tokenGenerator");
+
+const generateQRCode =  require("../utils/qrGenerator");
 
 async function registerAttendee(req, res) {
   const {
@@ -130,7 +130,7 @@ async function approveAttendee(req, res) {
     );
 
     const qrBuffer =
-      await QRCode.toBuffer(verifyUrl);
+      await generateQRCode(verifyUrl);
 
     const formattedDate =
       new Date(
