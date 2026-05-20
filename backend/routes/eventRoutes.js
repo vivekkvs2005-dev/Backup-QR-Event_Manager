@@ -13,7 +13,20 @@ const {
 
 const router = express.Router();
 
-router.post("/", createEvent);
+const validateRequiredFields =
+  require("../middleware/validateRequiredFields");
+
+router.post(
+  "/",
+
+  validateRequiredFields([
+    "organizer_id",
+    "title",
+    "event_date",
+  ]),
+
+  createEvent
+);
 
 router.get("/:id", getEvent);
 

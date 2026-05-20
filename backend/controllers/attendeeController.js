@@ -19,12 +19,6 @@ async function registerAttendee(req, res) {
     upi_utr,
   } = req.body;
 
-  if (!event_id || !name || !email || !upi_utr) {
-    return res.status(400).json({
-      error: "All fields are required.",
-    });
-  }
-
   try {
 
     await pool.query(

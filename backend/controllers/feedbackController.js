@@ -46,13 +46,6 @@ async function submitFeedback(req, res) {
     comments,
   } = req.body;
 
-  if (!ticket_token || !rating) {
-    return res.status(400).json({
-      error:
-        "Ticket token and rating are required.",
-    });
-  }
-
   try {
 
     const [attendeeRows] = await pool.query(

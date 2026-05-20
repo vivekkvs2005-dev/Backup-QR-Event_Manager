@@ -12,9 +12,21 @@ const {
 
 const router = express.Router();
 
+const validateRequiredFields =
+  require("../middleware/validateRequiredFields");
+
 router.get("/:token", getFeedbackPage);
 
-router.post("/", submitFeedback);
+router.post(
+  "/",
+
+  validateRequiredFields([
+    "ticket_token",
+    "rating",
+  ]),
+
+  submitFeedback
+);
 
 router.get(
   "/event/:eventId",

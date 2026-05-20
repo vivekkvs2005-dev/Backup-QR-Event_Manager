@@ -13,7 +13,21 @@ const {
 
 const router = express.Router();
 
-router.post("/register", registerAttendee);
+const validateRequiredFields =
+  require("../middleware/validateRequiredFields");
+
+router.post(
+  "/register",
+
+  validateRequiredFields([
+    "event_id",
+    "name",
+    "email",
+    "upi_utr",
+  ]),
+
+  registerAttendee
+);
 
 router.get(
   "/event/:eventId",
