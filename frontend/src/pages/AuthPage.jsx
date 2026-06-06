@@ -14,6 +14,8 @@ import API from "../services/api";
 
 import MessageAlert from "../components/MessageAlert";
 
+import { FaTicketAlt } from "react-icons/fa";
+
 function AuthPage({ user, setUser }) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
@@ -71,7 +73,10 @@ function AuthPage({ user, setUser }) {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">🎟️ EventManager</h1>
+        <h1 className="auth-title">
+          <FaTicketAlt />
+          EventManager
+        </h1>
         <p className="auth-subtitle">QR-Based Event Management System</p>
 
         <div className="tab-toggle">

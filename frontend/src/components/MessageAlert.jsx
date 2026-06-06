@@ -1,3 +1,8 @@
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+} from "react-icons/fa";
+
 function MessageAlert({
   type = "success",
   message,
@@ -7,7 +12,17 @@ function MessageAlert({
 
   return (
     <p className={`msg ${type}`}>
+
+      {type === "success" && (
+        <FaCheckCircle />
+      )}
+
+      {type === "error" && (
+        <FaTimesCircle />
+      )}
+
       {message}
+
     </p>
   );
 }

@@ -16,6 +16,11 @@ import {
   handleUnauthorized,
 } from "../services/authHeader";
 
+import {
+  FaCalendarPlus,
+  FaPaperclip,
+} from "react-icons/fa";
+
 function CreateEventPage({ user, setUser }) {
   const [form, setForm] = useState({
     title: "",
@@ -77,7 +82,10 @@ function CreateEventPage({ user, setUser }) {
       <Navbar user={user} setUser={setUser} />
       <div className="page-container">
         <div className="card">
-          <h2 className="card-title">📅 Create New Event</h2>
+          <h2 className="card-title">
+            <FaCalendarPlus />
+            Create New Event
+          </h2>
           <form onSubmit={handleSubmit} className="form">
             <div className="form-group">
               <label>Event Title</label>
@@ -116,7 +124,10 @@ function CreateEventPage({ user, setUser }) {
             {message && <p className="msg success">{message}</p>}
             {createdLink && (
               <div className="link-box">
-                <strong>📎 Share this registration link:</strong>
+                <strong>
+                  <FaPaperclip />
+                  Share this registration link:
+                </strong>
                 <a href={createdLink} target="_blank" rel="noreferrer">{createdLink}</a>
               </div>
             )}

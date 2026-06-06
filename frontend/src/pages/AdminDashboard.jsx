@@ -24,6 +24,9 @@ import {
   handleUnauthorized,
 } from "../services/authHeader";
 
+import { MdDashboard } from "react-icons/md";
+import { MdFeedback } from "react-icons/md";
+
 function AdminDashboard({ user, setUser }) {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -171,7 +174,10 @@ function AdminDashboard({ user, setUser }) {
     <div>
       <Navbar user={user} setUser={setUser} />
       <div className="page-container">
-        <h2 className="page-title">📋 Organizer Dashboard</h2>
+        <h2 className="page-title">
+          <MdDashboard />
+          Organizer Dashboard
+        </h2>
         <p>Welcome back, <strong>{user.name}</strong>! Manage your events below.</p>
 
         {events.length === 0 ? (
@@ -217,7 +223,8 @@ function AdminDashboard({ user, setUser }) {
         {feedbackEvent && (
           <div className="card attendees-panel">
             <h3 className="card-title">
-              ⭐ Feedback — {feedbackEvent.title}
+              <MdFeedback />
+              Feedback — {feedbackEvent.title}
             </h3>
 
             {feedbackStats && (

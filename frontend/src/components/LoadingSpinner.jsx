@@ -1,3 +1,5 @@
+import { FaSpinner } from "react-icons/fa";
+
 function LoadingSpinner({
 
   text = "Loading..."
@@ -6,9 +8,11 @@ function LoadingSpinner({
 
   return (
 
-    <div className="center-msg">
+    <div className="loading-spinner">
 
-      {text}
+      <FaSpinner className="spinner-icon" />
+
+      <span>{text}</span>
 
     </div>
   );

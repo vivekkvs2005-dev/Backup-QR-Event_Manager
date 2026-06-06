@@ -11,6 +11,15 @@ import API from "../services/api";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 
+import {
+  FaTicketAlt,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaRupeeSign,
+  FaEnvelope,
+  FaTimesCircle,
+} from "react-icons/fa";
+
 function RegisterPage() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
@@ -56,7 +65,14 @@ function RegisterPage() {
     }
   }
 
-  if (pageError) return <div className="center-msg">❌ {pageError}</div>;
+  if (pageError)
+    return (
+      <div className="center-msg">
+        <FaTimesCircle />
+        {" "}
+        {pageError}
+      </div>
+    );
   if (!event)
   return (
     <LoadingSpinner
@@ -71,12 +87,27 @@ function RegisterPage() {
   return (
     <div className="public-page">
       <div className="card register-card">
-        <h2 className="card-title">🎟️ {event.title}</h2>
+        <h2 className="card-title">
+          <FaTicketAlt />
+          {event.title}
+        </h2>
         <div className="event-meta">
-          <span>📅 {new Date(event.event_date).toLocaleString()}</span>
-          <span>📍 {event.venue}</span>
-          <span>💰 ₹{event.price}</span>
-          <span>📧 {event.organizer_email}</span>
+          <span>
+            <FaCalendarAlt />
+            {new Date(event.event_date).toLocaleString()}
+          </span>
+          <span>
+            <FaMapMarkerAlt />
+            {event.venue}
+          </span>
+          <span>
+            <FaRupeeSign />
+            {event.price}
+          </span>
+          <span>
+            <FaEnvelope />
+            {event.organizer_email}
+          </span>
         </div>
         <p className="event-desc">{event.description}</p>
 

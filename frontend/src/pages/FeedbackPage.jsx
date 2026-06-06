@@ -8,6 +8,11 @@ import API from "../services/api";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 
+import {
+  FaCommentDots,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
+
 function FeedbackPage() {
   const { token } = useParams();
 
@@ -88,7 +93,9 @@ function FeedbackPage() {
       <div className="card verify-card">
 
         <div className="verify-header">
-          <div className="verify-icon">💬</div>
+          <div className="verify-icon">
+            <FaCommentDots />
+          </div>
 
           <h2>{data.event_title}</h2>
 
@@ -98,7 +105,8 @@ function FeedbackPage() {
           </p>
 
           <p>
-            📍 {data.venue}
+            <FaMapMarkerAlt />
+            {data.venue}
           </p>
         </div>
 

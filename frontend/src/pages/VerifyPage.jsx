@@ -13,6 +13,17 @@ import LoadingSpinner from "../components/LoadingSpinner";
 
 import VerifyStatusChip from "../components/VerifyStatusChip";
 
+import {
+  FaCheckCircle,
+  FaUtensils,
+  FaGift,
+  FaTicketAlt,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaTimesCircle,
+  FaExclamationTriangle,
+} from "react-icons/fa";
+
 function VerifyPage() {
   const { token } = useParams();
   const [attendee, setAttendee] = useState(null);
@@ -35,9 +46,9 @@ function VerifyPage() {
     const res = await fetch(`${API}/verify/${type}/${token}`, { method: "PATCH" });
     const data = await res.json();
     if (!res.ok) {
-      alert("⚠️ " + (data.error || "Already claimed!"));
+      alert(data.error || "Already claimed!");
     } else {
-      setActionMsg("✅ " + data.message);
+      setActionMsg(data.message);
       // Refresh attendee data to update button states
       const r2 = await fetch(API + "/verify/" + token);
       const updated = await r2.json();
@@ -51,11 +62,14 @@ function VerifyPage() {
       <div className="card verify-card">
 
         <div className="verify-banner verify-invalid">
-          ❌ INVALID OR FAKE TICKET
+          <FaTimesCircle />
+          INVALID OR FAKE TICKET
         </div>
 
         <div className="verify-header">
-          <div className="verify-icon">🚫</div>
+          <div className="verify-icon verify-error-icon">
+            <FaTimesCircle />
+          </div>
 
           <h2>Verification Failed</h2>
 
@@ -69,8 +83,8 @@ function VerifyPage() {
   );
 }
   if (!attendee) return <LoadingSpinner
-    text="🔍 Verifying ticket..."
-    />;
+    text="Verifying ticket..."
+  />
 
   const isValid = attendee.payment_status === "paid";
   const alreadyUsed = attendee.checked_in;
@@ -80,12 +94,19 @@ function VerifyPage() {
       <div className="card verify-card">
         {/* Ticket Status */}
         <div className="verify-header">
-          <div className="verify-icon">🎟️</div>
+          <div className="verify-icon">
+            <FaTicketAlt />
+          </div>
           <h2>{attendee.name}</h2>
           <p className="verify-event">{attendee.event_title}</p>
-          <p>📍 {attendee.venue} | 📅 {new Date(attendee.event_date).toLocaleString()}</p>
           <p>
-            🎫 Token: <code>{attendee.ticket_token}</code>
+            <FaMapMarkerAlt /> {attendee.venue}
+            {" | "}
+            <FaCalendarAlt /> {new Date(attendee.event_date).toLocaleString()}
+          </p>
+          <p>
+            <FaTicketAlt /> Token:{" "}
+            <code>{attendee.ticket_token}</code>
           </p>
           <div
             className={`verify-banner ${
@@ -96,11 +117,24 @@ function VerifyPage() {
                 : "verify-valid"
             }`}
           >
-            {!isValid
-              ? "❌ INVALID TICKET"
-              : alreadyUsed
-              ? "⚠️ ENTRY ALREADY USED"
-              : "✅ VALID TICKET"}
+            {
+              !isValid ? (
+                <>
+                  <FaTimesCircle />
+                  INVALID TICKET
+                </>
+              ) : alreadyUsed ? (
+                <>
+                  <FaExclamationTriangle />
+                  ENTRY ALREADY USED
+                </>
+              ) : (
+                <>
+                  <FaCheckCircle />
+                  VALID TICKET
+                </>
+              )
+            }
           </div>
         </div>
 
@@ -139,7 +173,21 @@ function VerifyPage() {
                 }`}
                 onClick={() => !attendee.checked_in && doAction("checkin")}
               >
-                {attendee.checked_in ? "Entry Marked ✓" : "Mark Entry"}
+                {
+                    attendee.checked_in
+                    ? (
+                      <>
+                        <FaCheckCircle />
+                        Entry Marked
+                      </>
+                    )
+                    : (
+                      <>
+                        <FaCheckCircle />
+                        Mark Entry
+                      </>
+                    )
+                }
               </button>
               <button
                   disabled={!attendee.checked_in || attendee.lunch_served}
@@ -150,7 +198,21 @@ function VerifyPage() {
                   }`}
                   onClick={() => !attendee.lunch_served && doAction("lunch")}
                 >
-                {attendee.lunch_served ? "Lunch Claimed ✓" : "Mark Lunch Claimed"}
+                {
+                  attendee.lunch_served
+                    ? (
+                      <>
+                        <FaUtensils />
+                        Lunch Claimed
+                      </>
+                    )
+                    : (
+                      <>
+                        <FaUtensils />
+                        Mark Lunch Claimed
+                      </>
+                    )
+                }
               </button>
               <button
                   disabled={!attendee.checked_in || attendee.kit_distributed}
@@ -161,7 +223,21 @@ function VerifyPage() {
                   }`}
                   onClick={() => !attendee.kit_distributed && doAction("kit")}
                 >
-                {attendee.kit_distributed ? "Kit Distributed ✓" : "Mark Kit Claimed"}
+                {
+                  attendee.kit_distributed
+                    ? (
+                      <>
+                        <FaGift />
+                        Kit Distributed
+                      </>
+                    )
+                    : (
+                      <>
+                        <FaGift />
+                        Mark Kit Claimed
+                      </>
+                    )
+                }
               </button>
             </div>
           </>

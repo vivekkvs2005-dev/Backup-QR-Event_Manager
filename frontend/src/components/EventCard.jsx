@@ -1,5 +1,17 @@
 import { Link } from "react-router-dom";
 
+import {
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaRupeeSign,
+  FaUsers,
+  FaCheckCircle,
+} from "react-icons/fa";
+
+import { MdFeedback } from "react-icons/md";
+
+import { BsQrCodeScan } from "react-icons/bs";
+
 function EventCard({
 
   event,
@@ -27,15 +39,19 @@ function EventCard({
       <h3>{event.title}</h3>
 
       <p>
-        📅{" "}
+        <FaCalendarAlt />{" "}
         {new Date(
           event.event_date
         ).toLocaleString()}
       </p>
 
-      <p>📍 {event.venue}</p>
+      <p>
+        <FaMapMarkerAlt /> {event.venue}
+      </p>
 
-      <p>💰 ₹{event.price}</p>
+      <p>
+        <FaRupeeSign /> {event.price}
+      </p>
 
       <div className="event-card-actions">
 
@@ -45,6 +61,7 @@ function EventCard({
             loadAttendees(event)
           }
         >
+          <FaUsers />
           View Attendees
         </button>
 
@@ -61,7 +78,8 @@ function EventCard({
           to="/scanner"
           className="btn btn-success btn-sm"
         >
-          🎥 Scan Tickets
+          <BsQrCodeScan />
+          Scan Tickets
         </Link>
 
         <button
@@ -75,9 +93,16 @@ function EventCard({
             completeEvent(event.id)
           }
         >
-          {event.is_completed
-            ? "✅ Event Completed"
-            : "Finish Event"}
+          {
+            event.is_completed
+              ? (
+                <>
+                  <FaCheckCircle />
+                  Event Completed
+                </>
+              )
+              : "Finish Event"
+          }
         </button>
 
         <button
@@ -86,7 +111,8 @@ function EventCard({
             loadFeedback(event)
           }
         >
-          ⭐ View Feedback
+          <MdFeedback />
+          View Feedback
         </button>
 
       </div>

@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 import { BrowserMultiFormatReader } from "@zxing/browser";
 
+import { BsQrCodeScan } from "react-icons/bs";
+import { FaUpload } from "react-icons/fa";
+
 function ScannerPage() {
 
   const navigate = useNavigate();
@@ -289,7 +292,8 @@ function ScannerPage() {
       <div className="card scanner-card">
 
         <h2 className="card-title">
-          🎥 Scan Event Ticket
+          <BsQrCodeScan />
+          Scan Event Ticket
         </h2>
 
         <p className="scanner-text">
@@ -341,6 +345,7 @@ function ScannerPage() {
             htmlFor="qr-upload"
             className="btn btn-outline"
           >
+            <FaUpload />
             Upload QR Image
           </label>
 

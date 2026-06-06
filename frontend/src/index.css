@@ -60,6 +60,9 @@ a:hover {
   font-weight: 700;
   color: var(--primary);
   letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Desktop links */
@@ -72,6 +75,9 @@ a:hover {
 .navbar-links a {
   color: var(--text);
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .navbar-links a:hover {
   color: var(--primary);
@@ -81,6 +87,9 @@ a:hover {
   color: var(--text-muted);
   padding: 0 8px;
   border-left: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Hamburger — always hidden unless mobile */
@@ -115,7 +124,9 @@ a:hover {
   z-index: 99;
 }
 .navbar-mobile-menu a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 12px;
   border-radius: 6px;
   color: var(--text);
@@ -126,10 +137,16 @@ a:hover {
   background: var(--border);
   text-decoration: none;
 }
+.navbar-mobile-menu a svg {
+  color: var(--primary);
+}
 .navbar-mobile-user {
   color: var(--text-muted);
   padding: 10px 12px;
   font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .navbar-mobile-menu .btn {
   margin-top: 4px;
@@ -164,6 +181,9 @@ a:hover {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .public-page {
@@ -183,6 +203,32 @@ a:hover {
   color: var(--text-muted);
 }
 
+/* ─── LOADING SPINNER ───────────────────────── */
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 180px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.spinner-icon {
+  color: var(--primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ─── CARDS ──────────────────────────────────────────────────── */
 .card {
   background: var(--surface);
@@ -198,6 +244,9 @@ a:hover {
   font-weight: 700;
   margin-bottom: 20px;
   color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* ─── AUTH PAGE ──────────────────────────────────────────────── */
@@ -221,6 +270,10 @@ a:hover {
 }
 
 .auth-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-size: 26px;
   font-weight: 800;
   text-align: center;
@@ -347,6 +400,8 @@ a:hover {
   -webkit-tap-highlight-color: transparent;
 
   border: 1px solid transparent;
+
+  gap: 6px;
 }
 
 .btn:hover {
@@ -433,9 +488,11 @@ a:hover {
   font-size: 13px;
 }
 
-
 /* ─── MESSAGES ───────────────────────────────────────────────── */
 .msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 13.5px;
@@ -589,6 +646,9 @@ a:hover {
 }
 
 .event-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   color: var(--text-muted);
   background: var(--bg);
@@ -653,7 +713,12 @@ a:hover {
 
 .verify-icon {
   font-size: 48px;
+  color: var(--primary);
   margin-bottom: 8px;
+}
+
+.verify-error-icon {
+  color: var(--danger);
 }
 
 .verify-header h2 {
@@ -672,6 +737,11 @@ a:hover {
   font-size: 13px;
   color: var(--text-muted);
   margin: 6px 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 /* Status chips row */
@@ -683,6 +753,9 @@ a:hover {
 }
 
 .status-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 16px;
   border-radius: 20px;
   font-size: 13px;
@@ -908,6 +981,10 @@ code {
 /* ─── VERIFY STATUS BANNERS ───────────────────────── */
 
 .verify-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
   padding: 14px;
   border-radius: 10px;
