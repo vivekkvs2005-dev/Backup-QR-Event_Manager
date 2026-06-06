@@ -5,7 +5,7 @@
 
 import { Link } from "react-router-dom";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Navbar from "../components/Navbar";
 
@@ -24,8 +24,10 @@ import {
   handleUnauthorized,
 } from "../services/authHeader";
 
-import { MdDashboard } from "react-icons/md";
-import { MdFeedback } from "react-icons/md";
+import {
+  MdDashboard,
+  MdFeedback,
+} from "react-icons/md";
 
 function AdminDashboard({ user, setUser }) {
   const [events, setEvents] = useState([]);
@@ -36,6 +38,9 @@ function AdminDashboard({ user, setUser }) {
   const [feedbackData, setFeedbackData] = useState([]);
   const [feedbackStats, setFeedbackStats] = useState(null);
   const [feedbackEvent, setFeedbackEvent] = useState(null);
+
+  const attendeesRef = useRef(null);
+  const feedbackRef = useRef(null);
 
   // Load organizer's events on mount
   useEffect(() => {
@@ -65,6 +70,13 @@ function AdminDashboard({ user, setUser }) {
           return;
         }
     setAttendees(data);
+
+    setTimeout(() => {
+      attendeesRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
   }
 
   async function approveAttendee(id) {
@@ -122,6 +134,13 @@ function AdminDashboard({ user, setUser }) {
       setFeedbackData(data.feedback || []);
       setFeedbackStats(data.stats || null);
       setFeedbackEvent(event);
+
+      setTimeout(() => {
+        feedbackRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
 
     } catch {
       setMessage("Failed to load feedback.");
@@ -204,7 +223,10 @@ function AdminDashboard({ user, setUser }) {
 
         {/* Attendees Panel */}
         {selectedEvent && (
-          <div className="card attendees-panel">
+          <div
+            ref={attendeesRef}
+            className="card attendees-panel"
+          >
             <h3 className="card-title">Attendees — {selectedEvent.title}</h3>
             {message && <p className="msg success">{message}</p>}
             {attendees.length === 0 ? (
@@ -221,7 +243,10 @@ function AdminDashboard({ user, setUser }) {
         )}
         {/* Feedback Panel */}
         {feedbackEvent && (
-          <div className="card attendees-panel">
+          <div
+            ref={feedbackRef}
+            className="card attendees-panel"
+          >
             <h3 className="card-title">
               <MdFeedback />
               Feedback — {feedbackEvent.title}
