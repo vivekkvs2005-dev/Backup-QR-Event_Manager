@@ -25,7 +25,7 @@ function AuthPage({ user, setUser }) {
   const [loading, setLoading] = useState(false);
 
   // If already logged in, go home
-  if (user) return <Navigate to="/" />;
+  if (user) return <Navigate to="/create" />;
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });

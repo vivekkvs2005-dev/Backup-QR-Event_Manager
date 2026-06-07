@@ -18,7 +18,7 @@ import ScannerPage from "./pages/ScannerPage";
 import VerifyPage from "./pages/VerifyPage";
 import FeedbackPage from "./pages/FeedbackPage";
 import AdminDashboard from "./pages/AdminDashboard";
-
+import LandingPage from "./pages/LandingPage";
 import useAuthSession from "./hooks/useAuthSession";
 
 // ════════════════════════════════════════════════════════════════
@@ -41,7 +41,23 @@ export default function App() {
         {/* Event creation form — protected */}
         <Route
           path="/"
-          element={user ? <CreateEventPage user={user} setUser={setUser} /> : <Navigate to="/auth" />}
+          element={<LandingPage />}
+        />
+
+        <Route
+          path="/create"
+          element={
+            user
+              ? (
+                  <CreateEventPage
+                    user={user}
+                    setUser={setUser}
+                  />
+                )
+              : (
+                  <Navigate to="/auth" />
+                )
+          }
         />
 
         {/* Public attendee registration page */}
