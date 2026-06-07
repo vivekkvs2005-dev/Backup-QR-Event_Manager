@@ -16,8 +16,9 @@ function Navbar({ user, setUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   function handleLogout() {
+    localStorage.removeItem("organizer");
     setUser(null);
-    navigate("/auth");
+    window.location.href = "/";
   }
 
   return (

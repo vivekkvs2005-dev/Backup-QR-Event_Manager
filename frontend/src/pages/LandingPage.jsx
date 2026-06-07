@@ -26,22 +26,22 @@ function LandingPage() {
     {
       icon: <FaQrcode />,
       title: "QR Ticketing",
-      desc: "Generate secure QR tickets for approved attendees.",
+      desc: "Generate secure QR tickets and send them automatically via email.",
     },
     {
       icon: <FaCamera />,
       title: "QR Verification",
-      desc: "Verify attendee entry instantly using QR scanning.",
+      desc: "Verify attendee entry instantly using QR scanning and validation.",
     },
     {
       icon: <FaUtensils />,
       title: "Service Tracking",
-      desc: "Track entry, lunch claims and kit distribution.",
+      desc: "Track event entry, lunch distribution and kit allocation in real time.",
     },
     {
       icon: <FaComments />,
       title: "Feedback Analytics",
-      desc: "Collect ratings and feedback after every event.",
+      desc: "Collect attendee ratings, reviews and post-event analytics.",
     },
   ];
 
@@ -102,10 +102,11 @@ function LandingPage() {
           </h1>
 
           <p>
-            Create events, approve attendees,
-            generate QR tickets, verify entry,
-            manage event services and collect
-            feedback from one unified platform.
+            Create events, approve registrations,
+            distribute QR tickets through email,
+            verify attendee entry, track lunch
+            and kit distribution, and collect
+            feedback from a single platform.
           </p>
 
           <div className="landing-actions">
@@ -201,10 +202,13 @@ function LandingPage() {
           <div>Approval</div>
           <span>→</span>
 
-          <div>QR Ticket</div>
+         <div>QR Ticket Email</div>
           <span>→</span>
 
-          <div>Verification</div>
+          <div>Event Entry</div>
+          <span>→</span>
+
+          <div>Lunch & Kit</div>
           <span>→</span>
 
           <div>Feedback</div>
@@ -224,32 +228,44 @@ function LandingPage() {
 
         <div className="benefits-grid">
 
-            <div className="benefit-card">
-            <h3>Secure QR Validation</h3>
+          <div className="benefit-card">
+            <h3>Secure QR Ticketing</h3>
 
             <p>
-                Unique QR tickets help prevent duplicate entry
-                and simplify attendee verification.
+              Unique QR tickets prevent duplicate entry
+              and enable instant attendee verification.
             </p>
-            </div>
+          </div>
 
-            <div className="benefit-card">
-            <h3>Operational Efficiency</h3>
+          <div className="benefit-card">
+            <h3>Complete Event Operations</h3>
 
             <p>
-                Manage registrations, approvals, ticketing,
-                verification and service tracking from one dashboard.
+              Manage registrations, approvals,
+              attendance, lunch distribution and
+              kit allocation from one dashboard.
             </p>
-            </div>
+          </div>
 
-            <div className="benefit-card">
-            <h3>Actionable Feedback</h3>
+          <div className="benefit-card">
+            <h3>Automated Email Delivery</h3>
 
             <p>
-                Collect ratings and reviews after every event
-                to improve future experiences.
+              Approved attendees automatically
+              receive QR tickets and event
+              information through email.
             </p>
-            </div>
+          </div>
+
+          <div className="benefit-card">
+            <h3>Feedback & Insights</h3>
+
+            <p>
+              Collect attendee ratings and
+              feedback to measure event success
+              and improve future events.
+            </p>
+          </div>
 
         </div>
 
@@ -260,8 +276,9 @@ function LandingPage() {
         <h2>Ready to Manage Events Smarter?</h2>
 
         <p>
-          Simplify registrations, ticket validation
-          and attendee management with EventManager.
+          Streamline registrations, QR verification,
+          lunch and kit tracking, and post-event
+          feedback through one unified platform.
         </p>
 
         <Link
@@ -285,8 +302,9 @@ function LandingPage() {
             </div>
 
             <p>
-                Professional QR-Based Event Management System
-                for registrations, verification and attendee engagement.
+              Professional QR-Based Event Management System
+              for registrations, QR ticketing, attendee verification,
+              service tracking and feedback analytics.
             </p>
 
             </div>

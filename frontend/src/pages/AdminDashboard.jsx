@@ -29,6 +29,13 @@ import {
   MdFeedback,
 } from "react-icons/md";
 
+import {
+  FaUsers,
+  FaCheckCircle,
+  FaUtensils,
+  FaGift,
+} from "react-icons/fa";
+
 function AdminDashboard({ user, setUser }) {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -38,6 +45,53 @@ function AdminDashboard({ user, setUser }) {
   const [feedbackData, setFeedbackData] = useState([]);
   const [feedbackStats, setFeedbackStats] = useState(null);
   const [feedbackEvent, setFeedbackEvent] = useState(null);
+
+  const totalEvents = events.length;
+
+  const completedEvents =
+  events.filter(event => event.is_completed).length;
+
+  const activeEvents =
+  totalEvents - completedEvents;
+
+  const registeredCount =
+  attendees.length;
+
+const checkedInCount =
+  attendees.filter(
+    attendee => attendee.checked_in
+  ).length;
+
+const lunchCount =
+  attendees.filter(
+    attendee => attendee.lunch_served
+  ).length;
+
+const kitCount =
+  attendees.filter(
+    attendee => attendee.kit_distributed
+  ).length;
+
+  const checkedInPercentage =
+  registeredCount > 0
+    ? Math.round(
+        (checkedInCount / registeredCount) * 100
+      )
+    : 0;
+
+const lunchPercentage =
+  registeredCount > 0
+    ? Math.round(
+        (lunchCount / registeredCount) * 100
+      )
+    : 0;
+
+const kitPercentage =
+  registeredCount > 0
+    ? Math.round(
+        (kitCount / registeredCount) * 100
+      )
+    : 0;
 
   const attendeesRef = useRef(null);
   const feedbackRef = useRef(null);
@@ -199,6 +253,25 @@ function AdminDashboard({ user, setUser }) {
         </h2>
         <p>Welcome back, <strong>{user.name}</strong>! Manage your events below.</p>
 
+        <div className="dashboard-stats">
+
+        <div className="dashboard-stat-card">
+          <h3>{totalEvents}</h3>
+          <p>Total Events</p>
+        </div>
+
+        <div className="dashboard-stat-card">
+          <h3>{activeEvents}</h3>
+          <p>Active Events</p>
+        </div>
+
+        <div className="dashboard-stat-card">
+          <h3>{completedEvents}</h3>
+          <p>Completed Events</p>
+        </div>
+
+      </div>
+
         {events.length === 0 ? (
           <div className="empty-state">
             <p>You haven't created any events yet.</p>
@@ -227,10 +300,68 @@ function AdminDashboard({ user, setUser }) {
             ref={attendeesRef}
             className="card attendees-panel"
           >
-            <h3 className="card-title">Attendees — {selectedEvent.title}</h3>
+            <div className="attendees-header">
+
+              <h3 className="card-title">
+                Attendees — {selectedEvent.title}
+              </h3>
+
+              <span
+                className={`event-status ${
+                  selectedEvent.is_completed
+                    ? "status-completed"
+                    : "status-active"
+                }`}
+              >
+                {selectedEvent.is_completed
+                  ? "Completed"
+                  : "Active"}
+              </span>
+
+            </div>
+            <div className="event-metrics">
+
+            <div className="metric-pill">
+              <FaUsers />
+              {registeredCount} Registered
+            </div>
+
+            <div className="metric-pill">
+              <FaCheckCircle />
+              {checkedInCount} Checked In
+              <span className="metric-percent">
+                ({checkedInPercentage}%)
+              </span>
+            </div>
+
+            <div className="metric-pill">
+              <FaUtensils />
+              {lunchCount} Lunch Served
+              <span className="metric-percent">
+                ({lunchPercentage}%)
+              </span>
+            </div>
+
+            <div className="metric-pill">
+              <FaGift />
+              {kitCount} Kits Distributed
+              <span className="metric-percent">
+                ({kitPercentage}%)
+              </span>
+            </div>
+
+          </div>
             {message && <p className="msg success">{message}</p>}
             {attendees.length === 0 ? (
-              <p>No registrations yet for this event.</p>
+              <div className="empty-state-small">
+                <p>
+                  No attendees have registered for this event yet.
+                </p>
+
+                <p className="empty-hint">
+                  Share your registration link to start receiving registrations.
+                </p>
+              </div>
             ) : (
               <AttendeeTable
             attendees={attendees}
@@ -267,7 +398,15 @@ function AdminDashboard({ user, setUser }) {
             )}
 
             {feedbackData.length === 0 ? (
-              <p>No feedback submitted yet.</p>
+              <div className="empty-state-small">
+                <p>
+                  No feedback has been submitted for this event yet.
+                </p>
+
+                <p className="empty-hint">
+                  Feedback becomes available after attendees complete the event survey.
+                </p>
+              </div>
             ) : (
               <div className="feedback-list">
                 {feedbackData.map((item, index) => (

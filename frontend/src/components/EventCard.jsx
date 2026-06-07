@@ -36,7 +36,23 @@ function EventCard({
       }`}
     >
 
-      <h3>{event.title}</h3>
+      <div className="event-header">
+
+        <h3>{event.title}</h3>
+
+        <span
+          className={`event-status ${
+            event.is_completed
+              ? "status-completed"
+              : "status-active"
+          }`}
+        >
+          {event.is_completed
+            ? "Completed"
+            : "Active"}
+        </span>
+
+      </div>
 
       <p>
         <FaCalendarAlt />{" "}
