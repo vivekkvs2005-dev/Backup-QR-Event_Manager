@@ -202,7 +202,7 @@ function AdminDashboard({ user, setUser }) {
         {events.length === 0 ? (
           <div className="empty-state">
             <p>You haven't created any events yet.</p>
-            <Link to="/" className="btn btn-primary">Create Your First Event</Link>
+            <Link to="/create" className="btn btn-primary">Create Your First Event</Link>
           </div>
         ) : (
           <div className="events-grid">

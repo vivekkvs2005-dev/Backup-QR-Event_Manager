@@ -6,6 +6,7 @@ import {
   FaCalendarPlus,
   FaBars,
   FaTimes,
+  FaHome,
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { FiLogOut } from "react-icons/fi";
@@ -21,13 +22,17 @@ function Navbar({ user, setUser }) {
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">
+      <Link to="/create" className="navbar-brand">
         <FaTicketAlt />
         <span>EventManager</span>
-      </div>
+      </Link>
 
       <div className="navbar-links">
         <Link to="/">
+          <FaHome />
+          Home
+        </Link>
+        <Link to="/create">
           <FaCalendarPlus />
           Create Event
         </Link>
@@ -58,6 +63,10 @@ function Navbar({ user, setUser }) {
 
       <div className={`navbar-mobile-menu${menuOpen ? " open" : ""}`}>
         <Link to="/" onClick={() => setMenuOpen(false)}>
+          <FaHome />
+          Home
+        </Link>
+        <Link to="/create" onClick={() => setMenuOpen(false)}>
           <FaCalendarPlus />
           Create Event
         </Link>
